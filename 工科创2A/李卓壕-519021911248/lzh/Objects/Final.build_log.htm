@@ -1,0 +1,303 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: μVision V5.34.0.0
+Copyright (C) 2021 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: xmy xmy, 上海交通大学, LIC=----
+ 
+Tool Versions:
+Toolchain:       MDK-Lite  Version: 5.34.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 7 (build 960)
+Assembler:       Armasm.exe V5.06 update 7 (build 960)
+Linker/Locator:  ArmLink.exe V5.06 update 7 (build 960)
+Library Manager: ArmAr.exe V5.06 update 7 (build 960)
+Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
+CPU DLL:         SARMCM3.DLL V5.34.0.0
+Dialog DLL:      DCM.DLL V1.17.3.0
+Target DLL:      lmidk-agdi.dll V???
+Dialog DLL:      TCM.DLL V1.48.0.0
+ 
+<h2>Project:</h2>
+C:\Users\xmy\Desktop\lzh\Stepper.uvprojx
+Project File Date:  06/18/2021
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'Target 1'
+compiling Stepper.c...
+.\inc\tm4c1294ncpdt.h(48): warning:  #47-D: incompatible redefinition of macro "INT_GPIOA"  (declared at line 370 of ".\inc\hw_ints.h")
+  #define INT_GPIOA               16          // GPIO Port A
+.\inc\tm4c1294ncpdt.h(49): warning:  #47-D: incompatible redefinition of macro "INT_GPIOB"  (declared at line 371 of ".\inc\hw_ints.h")
+  #define INT_GPIOB               17          // GPIO Port B
+.\inc\tm4c1294ncpdt.h(50): warning:  #47-D: incompatible redefinition of macro "INT_GPIOC"  (declared at line 372 of ".\inc\hw_ints.h")
+  #define INT_GPIOC               18          // GPIO Port C
+.\inc\tm4c1294ncpdt.h(51): warning:  #47-D: incompatible redefinition of macro "INT_GPIOD"  (declared at line 373 of ".\inc\hw_ints.h")
+  #define INT_GPIOD               19          // GPIO Port D
+.\inc\tm4c1294ncpdt.h(52): warning:  #47-D: incompatible redefinition of macro "INT_GPIOE"  (declared at line 374 of ".\inc\hw_ints.h")
+  #define INT_GPIOE               20          // GPIO Port E
+.\inc\tm4c1294ncpdt.h(53): warning:  #47-D: incompatible redefinition of macro "INT_UART0"  (declared at line 451 of ".\inc\hw_ints.h")
+  #define INT_UART0               21          // UART0
+.\inc\tm4c1294ncpdt.h(54): warning:  #47-D: incompatible redefinition of macro "INT_UART1"  (declared at line 452 of ".\inc\hw_ints.h")
+  #define INT_UART1               22          // UART1
+.\inc\tm4c1294ncpdt.h(55): warning:  #47-D: incompatible redefinition of macro "INT_SSI0"  (declared at line 428 of ".\inc\hw_ints.h")
+  #define INT_SSI0                23          // SSI0
+.\inc\tm4c1294ncpdt.h(56): warning:  #47-D: incompatible redefinition of macro "INT_I2C0"  (declared at line 403 of ".\inc\hw_ints.h")
+  #define INT_I2C0                24          // I2C0
+.\inc\tm4c1294ncpdt.h(57): warning:  #47-D: incompatible redefinition of macro "INT_PWM0_FAULT"  (declared at line 419 of ".\inc\hw_ints.h")
+  #define INT_PWM0_FAULT          25          // PWM Fault
+.\inc\tm4c1294ncpdt.h(58): warning:  #47-D: incompatible redefinition of macro "INT_PWM0_0"  (declared at line 415 of ".\inc\hw_ints.h")
+  #define INT_PWM0_0              26          // PWM Generator 0
+.\inc\tm4c1294ncpdt.h(59): warning:  #47-D: incompatible redefinition of macro "INT_PWM0_1"  (declared at line 416 of ".\inc\hw_ints.h")
+  #define INT_PWM0_1              27          // PWM Generator 1
+.\inc\tm4c1294ncpdt.h(60): warning:  #47-D: incompatible redefinition of macro "INT_PWM0_2"  (declared at line 417 of ".\inc\hw_ints.h")
+  #define INT_PWM0_2              28          // PWM Generator 2
+.\inc\tm4c1294ncpdt.h(61): warning:  #47-D: incompatible redefinition of macro "INT_QEI0"  (declared at line 425 of ".\inc\hw_ints.h")
+  #define INT_QEI0                29          // QEI0
+.\inc\tm4c1294ncpdt.h(62): warning:  #47-D: incompatible redefinition of macro "INT_ADC0SS0"  (declared at line 352 of ".\inc\hw_ints.h")
+  #define INT_ADC0SS0             30          // ADC0 Sequence 0
+.\inc\tm4c1294ncpdt.h(63): warning:  #47-D: incompatible redefinition of macro "INT_ADC0SS1"  (declared at line 353 of ".\inc\hw_ints.h")
+  #define INT_ADC0SS1             31          // ADC0 Sequence 1
+.\inc\tm4c1294ncpdt.h(64): warning:  #47-D: incompatible redefinition of macro "INT_ADC0SS2"  (declared at line 354 of ".\inc\hw_ints.h")
+  #define INT_ADC0SS2             32          // ADC0 Sequence 2
+.\inc\tm4c1294ncpdt.h(65): warning:  #47-D: incompatible redefinition of macro "INT_ADC0SS3"  (declared at line 355 of ".\inc\hw_ints.h")
+  #define INT_ADC0SS3             33          // ADC0 Sequence 3
+.\inc\tm4c1294ncpdt.h(66): warning:  #47-D: incompatible redefinition of macro "INT_WATCHDOG"  (declared at line 462 of ".\inc\hw_ints.h")
+  #define INT_WATCHDOG            34          // Watchdog Timers 0 and 1
+.\inc\tm4c1294ncpdt.h(67): warning:  #47-D: incompatible redefinition of macro "INT_TIMER0A"  (declared at line 435 of ".\inc\hw_ints.h")
+  #define INT_TIMER0A             35          // 16/32-Bit Timer 0A
+.\inc\tm4c1294ncpdt.h(68): warning:  #47-D: incompatible redefinition of macro "INT_TIMER0B"  (declared at line 436 of ".\inc\hw_ints.h")
+  #define INT_TIMER0B             36          // 16/32-Bit Timer 0B
+.\inc\tm4c1294ncpdt.h(69): warning:  #47-D: incompatible redefinition of macro "INT_TIMER1A"  (declared at line 437 of ".\inc\hw_ints.h")
+  #define INT_TIMER1A             37          // 16/32-Bit Timer 1A
+.\inc\tm4c1294ncpdt.h(70): warning:  #47-D: incompatible redefinition of macro "INT_TIMER1B"  (declared at line 438 of ".\inc\hw_ints.h")
+  #define INT_TIMER1B             38          // 16/32-Bit Timer 1B
+.\inc\tm4c1294ncpdt.h(71): warning:  #47-D: incompatible redefinition of macro "INT_TIMER2A"  (declared at line 439 of ".\inc\hw_ints.h")
+  #define INT_TIMER2A             39          // 16/32-Bit Timer 2A
+.\inc\tm4c1294ncpdt.h(72): warning:  #47-D: incompatible redefinition of macro "INT_TIMER2B"  (declared at line 440 of ".\inc\hw_ints.h")
+  #define INT_TIMER2B             40          // 16/32-Bit Timer 2B
+.\inc\tm4c1294ncpdt.h(73): warning:  #47-D: incompatible redefinition of macro "INT_COMP0"  (declared at line 363 of ".\inc\hw_ints.h")
+  #define INT_COMP0               41          // Analog Comparator 0
+.\inc\tm4c1294ncpdt.h(74): warning:  #47-D: incompatible redefinition of macro "INT_COMP1"  (declared at line 364 of ".\inc\hw_ints.h")
+  #define INT_COMP1               42          // Analog Comparator 1
+.\inc\tm4c1294ncpdt.h(75): warning:  #47-D: incompatible redefinition of macro "INT_COMP2"  (declared at line 365 of ".\inc\hw_ints.h")
+  #define INT_COMP2               43          // Analog Comparator 2
+.\inc\tm4c1294ncpdt.h(76): warning:  #47-D: incompatible redefinition of macro "INT_SYSCTL"  (declared at line 432 of ".\inc\hw_ints.h")
+  #define INT_SYSCTL              44          // System Control
+.\inc\tm4c1294ncpdt.h(77): warning:  #47-D: incompatible redefinition of macro "INT_FLASH"  (declared at line 369 of ".\inc\hw_ints.h")
+  #define INT_FLASH               45          // Flash Memory Control
+.\inc\tm4c1294ncpdt.h(78): warning:  #47-D: incompatible redefinition of macro "INT_GPIOF"  (declared at line 375 of ".\inc\hw_ints.h")
+  #define INT_GPIOF               46          // GPIO Port F
+.\inc\tm4c1294ncpdt.h(79): warning:  #47-D: incompatible redefinition of macro "INT_GPIOG"  (declared at line 376 of ".\inc\hw_ints.h")
+  #define INT_GPIOG               47          // GPIO Port G
+.\inc\tm4c1294ncpdt.h(80): warning:  #47-D: incompatible redefinition of macro "INT_GPIOH"  (declared at line 377 of ".\inc\hw_ints.h")
+  #define INT_GPIOH               48          // GPIO Port H
+.\inc\tm4c1294ncpdt.h(81): warning:  #47-D: incompatible redefinition of macro "INT_UART2"  (declared at line 453 of ".\inc\hw_ints.h")
+  #define INT_UART2               49          // UART2
+.\inc\tm4c1294ncpdt.h(82): warning:  #47-D: incompatible redefinition of macro "INT_SSI1"  (declared at line 429 of ".\inc\hw_ints.h")
+  #define INT_SSI1                50          // SSI1
+.\inc\tm4c1294ncpdt.h(83): warning:  #47-D: incompatible redefinition of macro "INT_TIMER3A"  (declared at line 441 of ".\inc\hw_ints.h")
+  #define INT_TIMER3A             51          // 16/32-Bit Timer 3A
+.\inc\tm4c1294ncpdt.h(84): warning:  #47-D: incompatible redefinition of macro "INT_TIMER3B"  (declared at line 442 of ".\inc\hw_ints.h")
+  #define INT_TIMER3B             52          // 16/32-Bit Timer 3B
+.\inc\tm4c1294ncpdt.h(85): warning:  #47-D: incompatible redefinition of macro "INT_I2C1"  (declared at line 404 of ".\inc\hw_ints.h")
+  #define INT_I2C1                53          // I2C1
+.\inc\tm4c1294ncpdt.h(86): warning:  #47-D: incompatible redefinition of macro "INT_CAN0"  (declared at line 361 of ".\inc\hw_ints.h")
+  #define INT_CAN0                54          // CAN 0
+.\inc\tm4c1294ncpdt.h(87): warning:  #47-D: incompatible redefinition of macro "INT_CAN1"  (declared at line 362 of ".\inc\hw_ints.h")
+  #define INT_CAN1                55          // CAN1
+.\inc\tm4c1294ncpdt.h(88): warning:  #47-D: incompatible redefinition of macro "INT_EMAC0"  (declared at line 367 of ".\inc\hw_ints.h")
+  #define INT_EMAC0               56          // Ethernet MAC
+.\inc\tm4c1294ncpdt.h(89): warning:  #47-D: incompatible redefinition of macro "INT_HIBERNATE"  (declared at line 402 of ".\inc\hw_ints.h")
+  #define INT_HIBERNATE           57          // HIB
+.\inc\tm4c1294ncpdt.h(90): warning:  #47-D: incompatible redefinition of macro "INT_USB0"  (declared at line 461 of ".\inc\hw_ints.h")
+  #define INT_USB0                58          // USB MAC
+.\inc\tm4c1294ncpdt.h(91): warning:  #47-D: incompatible redefinition of macro "INT_PWM0_3"  (declared at line 418 of ".\inc\hw_ints.h")
+  #define INT_PWM0_3              59          // PWM Generator 3
+.\inc\tm4c1294ncpdt.h(92): warning:  #47-D: incompatible redefinition of macro "INT_UDMA"  (declared at line 459 of ".\inc\hw_ints.h")
+  #define INT_UDMA                60          // uDMA 0 Software
+.\inc\tm4c1294ncpdt.h(93): warning:  #47-D: incompatible redefinition of macro "INT_UDMAERR"  (declared at line 460 of ".\inc\hw_ints.h")
+  #define INT_UDMAERR             61          // uDMA 0 Error
+.\inc\tm4c1294ncpdt.h(94): warning:  #47-D: incompatible redefinition of macro "INT_ADC1SS0"  (declared at line 356 of ".\inc\hw_ints.h")
+  #define INT_ADC1SS0             62          // ADC1 Sequence 0
+.\inc\tm4c1294ncpdt.h(95): warning:  #47-D: incompatible redefinition of macro "INT_ADC1SS1"  (declared at line 357 of ".\inc\hw_ints.h")
+  #define INT_ADC1SS1             63          // ADC1 Sequence 1
+.\inc\tm4c1294ncpdt.h(96): warning:  #47-D: incompatible redefinition of macro "INT_ADC1SS2"  (declared at line 358 of ".\inc\hw_ints.h")
+  #define INT_ADC1SS2             64          // ADC1 Sequence 2
+.\inc\tm4c1294ncpdt.h(97): warning:  #47-D: incompatible redefinition of macro "INT_ADC1SS3"  (declared at line 359 of ".\inc\hw_ints.h")
+  #define INT_ADC1SS3             65          // ADC1 Sequence 3
+.\inc\tm4c1294ncpdt.h(98): warning:  #47-D: incompatible redefinition of macro "INT_EPI0"  (declared at line 368 of ".\inc\hw_ints.h")
+  #define INT_EPI0                66          // EPI 0
+.\inc\tm4c1294ncpdt.h(99): warning:  #47-D: incompatible redefinition of macro "INT_GPIOJ"  (declared at line 378 of ".\inc\hw_ints.h")
+  #define INT_GPIOJ               67          // GPIO Port J
+.\inc\tm4c1294ncpdt.h(100): warning:  #47-D: incompatible redefinition of macro "INT_GPIOK"  (declared at line 379 of ".\inc\hw_ints.h")
+  #define INT_GPIOK               68          // GPIO Port K
+.\inc\tm4c1294ncpdt.h(101): warning:  #47-D: incompatible redefinition of macro "INT_GPIOL"  (declared at line 380 of ".\inc\hw_ints.h")
+  #define INT_GPIOL               69          // GPIO Port L
+.\inc\tm4c1294ncpdt.h(102): warning:  #47-D: incompatible redefinition of macro "INT_SSI2"  (declared at line 430 of ".\inc\hw_ints.h")
+  #define INT_SSI2                70          // SSI 2
+.\inc\tm4c1294ncpdt.h(103): warning:  #47-D: incompatible redefinition of macro "INT_SSI3"  (declared at line 431 of ".\inc\hw_ints.h")
+  #define INT_SSI3                71          // SSI 3
+.\inc\tm4c1294ncpdt.h(104): warning:  #47-D: incompatible redefinition of macro "INT_UART3"  (declared at line 454 of ".\inc\hw_ints.h")
+  #define INT_UART3               72          // UART 3
+.\inc\tm4c1294ncpdt.h(105): warning:  #47-D: incompatible redefinition of macro "INT_UART4"  (declared at line 455 of ".\inc\hw_ints.h")
+  #define INT_UART4               73          // UART 4
+.\inc\tm4c1294ncpdt.h(106): warning:  #47-D: incompatible redefinition of macro "INT_UART5"  (declared at line 456 of ".\inc\hw_ints.h")
+  #define INT_UART5               74          // UART 5
+.\inc\tm4c1294ncpdt.h(107): warning:  #47-D: incompatible redefinition of macro "INT_UART6"  (declared at line 457 of ".\inc\hw_ints.h")
+  #define INT_UART6               75          // UART 6
+.\inc\tm4c1294ncpdt.h(108): warning:  #47-D: incompatible redefinition of macro "INT_UART7"  (declared at line 458 of ".\inc\hw_ints.h")
+  #define INT_UART7               76          // UART 7
+.\inc\tm4c1294ncpdt.h(109): warning:  #47-D: incompatible redefinition of macro "INT_I2C2"  (declared at line 405 of ".\inc\hw_ints.h")
+  #define INT_I2C2                77          // I2C 2
+.\inc\tm4c1294ncpdt.h(110): warning:  #47-D: incompatible redefinition of macro "INT_I2C3"  (declared at line 406 of ".\inc\hw_ints.h")
+  #define INT_I2C3                78          // I2C 3
+.\inc\tm4c1294ncpdt.h(111): warning:  #47-D: incompatible redefinition of macro "INT_TIMER4A"  (declared at line 443 of ".\inc\hw_ints.h")
+  #define INT_TIMER4A             79          // Timer 4A
+.\inc\tm4c1294ncpdt.h(112): warning:  #47-D: incompatible redefinition of macro "INT_TIMER4B"  (declared at line 444 of ".\inc\hw_ints.h")
+  #define INT_TIMER4B             80          // Timer 4B
+.\inc\tm4c1294ncpdt.h(113): warning:  #47-D: incompatible redefinition of macro "INT_TIMER5A"  (declared at line 445 of ".\inc\hw_ints.h")
+  #define INT_TIMER5A             81          // Timer 5A
+.\inc\tm4c1294ncpdt.h(114): warning:  #47-D: incompatible redefinition of macro "INT_TIMER5B"  (declared at line 446 of ".\inc\hw_ints.h")
+  #define INT_TIMER5B             82          // Timer 5B
+.\inc\tm4c1294ncpdt.h(115): warning:  #47-D: incompatible redefinition of macro "INT_SYSEXC"  (declared at line 433 of ".\inc\hw_ints.h")
+  #define INT_SYSEXC              83          // Floating-Point Exception
+.\inc\tm4c1294ncpdt.h(117): warning:  #47-D: incompatible redefinition of macro "INT_I2C4"  (declared at line 407 of ".\inc\hw_ints.h")
+  #define INT_I2C4                86          // I2C 4
+.\inc\tm4c1294ncpdt.h(118): warning:  #47-D: incompatible redefinition of macro "INT_I2C5"  (declared at line 408 of ".\inc\hw_ints.h")
+  #define INT_I2C5                87          // I2C 5
+.\inc\tm4c1294ncpdt.h(119): warning:  #47-D: incompatible redefinition of macro "INT_GPIOM"  (declared at line 381 of ".\inc\hw_ints.h")
+  #define INT_GPIOM               88          // GPIO Port M
+.\inc\tm4c1294ncpdt.h(120): warning:  #47-D: incompatible redefinition of macro "INT_GPION"  (declared at line 382 of ".\inc\hw_ints.h")
+  #define INT_GPION               89          // GPIO Port N
+.\inc\tm4c1294ncpdt.h(121): warning:  #47-D: incompatible redefinition of macro "INT_TAMPER0"  (declared at line 434 of ".\inc\hw_ints.h")
+  #define INT_TAMPER0             91          // Tamper
+.\inc\tm4c1294ncpdt.h(122): warning:  #47-D: incompatible redefinition of macro "INT_GPIOP0"  (declared at line 383 of ".\inc\hw_ints.h")
+  #define INT_GPIOP0              92          // GPIO Port P (Summary or P0)
+.\inc\tm4c1294ncpdt.h(123): warning:  #47-D: incompatible redefinition of macro "INT_GPIOP1"  (declared at line 384 of ".\inc\hw_ints.h")
+  #define INT_GPIOP1              93          // GPIO Port P1
+.\inc\tm4c1294ncpdt.h(124): warning:  #47-D: incompatible redefinition of macro "INT_GPIOP2"  (declared at line 385 of ".\inc\hw_ints.h")
+  #define INT_GPIOP2              94          // GPIO Port P2
+.\inc\tm4c1294ncpdt.h(125): warning:  #47-D: incompatible redefinition of macro "INT_GPIOP3"  (declared at line 386 of ".\inc\hw_ints.h")
+  #define INT_GPIOP3              95          // GPIO Port P3
+.\inc\tm4c1294ncpdt.h(126): warning:  #47-D: incompatible redefinition of macro "INT_GPIOP4"  (declared at line 387 of ".\inc\hw_ints.h")
+  #define INT_GPIOP4              96          // GPIO Port P4
+.\inc\tm4c1294ncpdt.h(127): warning:  #47-D: incompatible redefinition of macro "INT_GPIOP5"  (declared at line 388 of ".\inc\hw_ints.h")
+  #define INT_GPIOP5              97          // GPIO Port P5
+.\inc\tm4c1294ncpdt.h(128): warning:  #47-D: incompatible redefinition of macro "INT_GPIOP6"  (declared at line 389 of ".\inc\hw_ints.h")
+  #define INT_GPIOP6              98          // GPIO Port P6
+.\inc\tm4c1294ncpdt.h(129): warning:  #47-D: incompatible redefinition of macro "INT_GPIOP7"  (declared at line 390 of ".\inc\hw_ints.h")
+  #define INT_GPIOP7              99          // GPIO Port P7
+.\inc\tm4c1294ncpdt.h(130): warning:  #47-D: incompatible redefinition of macro "INT_GPIOQ0"  (declared at line 391 of ".\inc\hw_ints.h")
+  #define INT_GPIOQ0              100         // GPIO Port Q (Summary or Q0)
+.\inc\tm4c1294ncpdt.h(131): warning:  #47-D: incompatible redefinition of macro "INT_GPIOQ1"  (declared at line 392 of ".\inc\hw_ints.h")
+  #define INT_GPIOQ1              101         // GPIO Port Q1
+.\inc\tm4c1294ncpdt.h(132): warning:  #47-D: incompatible redefinition of macro "INT_GPIOQ2"  (declared at line 393 of ".\inc\hw_ints.h")
+  #define INT_GPIOQ2              102         // GPIO Port Q2
+.\inc\tm4c1294ncpdt.h(133): warning:  #47-D: incompatible redefinition of macro "INT_GPIOQ3"  (declared at line 394 of ".\inc\hw_ints.h")
+  #define INT_GPIOQ3              103         // GPIO Port Q3
+.\inc\tm4c1294ncpdt.h(134): warning:  #47-D: incompatible redefinition of macro "INT_GPIOQ4"  (declared at line 395 of ".\inc\hw_ints.h")
+  #define INT_GPIOQ4              104         // GPIO Port Q4
+.\inc\tm4c1294ncpdt.h(135): warning:  #47-D: incompatible redefinition of macro "INT_GPIOQ5"  (declared at line 396 of ".\inc\hw_ints.h")
+  #define INT_GPIOQ5              105         // GPIO Port Q5
+.\inc\tm4c1294ncpdt.h(136): warning:  #47-D: incompatible redefinition of macro "INT_GPIOQ6"  (declared at line 397 of ".\inc\hw_ints.h")
+  #define INT_GPIOQ6              106         // GPIO Port Q6
+.\inc\tm4c1294ncpdt.h(137): warning:  #47-D: incompatible redefinition of macro "INT_GPIOQ7"  (declared at line 398 of ".\inc\hw_ints.h")
+  #define INT_GPIOQ7              107         // GPIO Port Q7
+.\inc\tm4c1294ncpdt.h(138): warning:  #47-D: incompatible redefinition of macro "INT_TIMER6A"  (declared at line 447 of ".\inc\hw_ints.h")
+  #define INT_TIMER6A             114         // 16/32-Bit Timer 6A
+.\inc\tm4c1294ncpdt.h(139): warning:  #47-D: incompatible redefinition of macro "INT_TIMER6B"  (declared at line 448 of ".\inc\hw_ints.h")
+  #define INT_TIMER6B             115         // 16/32-Bit Timer 6B
+.\inc\tm4c1294ncpdt.h(140): warning:  #47-D: incompatible redefinition of macro "INT_TIMER7A"  (declared at line 449 of ".\inc\hw_ints.h")
+  #define INT_TIMER7A             116         // 16/32-Bit Timer 7A
+.\inc\tm4c1294ncpdt.h(141): warning:  #47-D: incompatible redefinition of macro "INT_TIMER7B"  (declared at line 450 of ".\inc\hw_ints.h")
+  #define INT_TIMER7B             117         // 16/32-Bit Timer 7B
+.\inc\tm4c1294ncpdt.h(142): warning:  #47-D: incompatible redefinition of macro "INT_I2C6"  (declared at line 409 of ".\inc\hw_ints.h")
+  #define INT_I2C6                118         // I2C 6
+.\inc\tm4c1294ncpdt.h(143): warning:  #47-D: incompatible redefinition of macro "INT_I2C7"  (declared at line 410 of ".\inc\hw_ints.h")
+  #define INT_I2C7                119         // I2C 7
+.\inc\tm4c1294ncpdt.h(144): warning:  #47-D: incompatible redefinition of macro "INT_I2C8"  (declared at line 411 of ".\inc\hw_ints.h")
+  #define INT_I2C8                125         // I2C 8
+.\inc\tm4c1294ncpdt.h(145): warning:  #47-D: incompatible redefinition of macro "INT_I2C9"  (declared at line 412 of ".\inc\hw_ints.h")
+  #define INT_I2C9                126         // I2C 9
+Stepper.c(59): warning:  #1295-D: Deprecated declaration Date - give arg types
+  void          Date();
+Stepper.c(238): warning:  #1293-D: assignment in condition
+  				if(key_pressed=I2C0_ReadByte(TCA6424_I2CADDR,TCA6424_INPUT_PORT0)==0xef){
+Stepper.c(270): warning:  #1293-D: assignment in condition
+  					while(key_pressed=I2C0_ReadByte(TCA6424_I2CADDR,TCA6424_INPUT_PORT0)==0xfb){
+Stepper.c(289): warning:  #1293-D: assignment in condition
+  					while(key_pressed=I2C0_ReadByte(TCA6424_I2CADDR,TCA6424_INPUT_PORT0)==0xf7){
+Stepper.c(321): warning:  #1293-D: assignment in condition
+  					while(key_pressed=I2C0_ReadByte(TCA6424_I2CADDR,TCA6424_INPUT_PORT0)==0x7f){
+Stepper.c(339): warning:  #177-D: variable "cnt"  was declared but never referenced
+  	uint8_t cnt=0;
+Stepper.c(384): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+  	UARTStringPut((uint8_t *)"\r\nHello, world!\r\n");
+Stepper.c(434): warning:  #550-D: variable "result"  was set but never used
+  	uint8_t result;
+Stepper.c(792): warning:  #186-D: pointless comparison of unsigned integer with zero
+  			result 	= I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,(lightreverse <= 1&&lightreverse >= 0)?0x0:0x1);
+Stepper.c(795): warning:  #186-D: pointless comparison of unsigned integer with zero
+  			result 	= I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,(lightreverse <= 1&&lightreverse >= 0)?0x0:0x2);
+Stepper.c(798): warning:  #186-D: pointless comparison of unsigned integer with zero
+  			result 	= I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,(lightreverse <= 1&&lightreverse >= 0)?0x0:0x4);	
+Stepper.c(801): warning:  #186-D: pointless comparison of unsigned integer with zero
+  			result 	= I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,(lightreverse <= 1&&lightreverse >= 0)?0x0:0x8);	
+Stepper.c(804): warning:  #186-D: pointless comparison of unsigned integer with zero
+  			result 	= I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,(lightreverse <= 1&&lightreverse >= 0)?0x0:0x10);
+Stepper.c(807): warning:  #186-D: pointless comparison of unsigned integer with zero
+  			result 	= I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,(lightreverse <= 1&&lightreverse >= 0)?0x0:0x20);	
+Stepper.c(810): warning:  #186-D: pointless comparison of unsigned integer with zero
+  			result 	= I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,(lightreverse <= 1&&lightreverse >= 0)?0x0:0x40);	
+Stepper.c(813): warning:  #186-D: pointless comparison of unsigned integer with zero
+  			result 	= I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,(lightreverse <= 1&&lightreverse >= 0)?0x0:0x80);
+Stepper.c(901): warning:  #550-D: variable "Mozi"  was set but never used
+  		int Mozi=0;
+Stepper.c(1056): warning:  #1293-D: assignment in condition
+  			while(key_pressed=I2C0_ReadByte(TCA6424_I2CADDR,TCA6424_INPUT_PORT0)==0xfe){
+Stepper.c: 115 warnings, 0 errors
+linking...
+Program Size: Code=13308 RO-data=1960 RW-data=316 ZI-data=1612  
+FromELF: creating hex file...
+".\Objects\Final.axf" - 0 Error(s), 115 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.7.0.pack
+                ARM.CMSIS.5.7.0
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.4.0
+   * Component: DSP Variant: Library Version: 1.8.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.TM4C_DFP.1.1.0.pack
+                Keil.TM4C_DFP.1.1.0
+                Texas Instruments Tiva C Series Device Support and Examples
+   * Component: Startup Version: 1.0.0
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_Target_1
+  C:\Users\xmy\Desktop\ARM\CMSIS\5.7.0\CMSIS\Core\Include
+  C:\Users\xmy\Desktop\ARM\CMSIS\5.7.0\CMSIS\DSP\Include
+  C:\Users\xmy\Desktop\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.4.0
+
+   * Component: ARM::CMSIS:DSP:Library:1.8.0
+      Include file:  CMSIS\DSP\Include\arm_math.h
+      Library file:  CMSIS\DSP\Lib\ARM\arm_cortexM4lf_math.lib
+
+   * Component: Keil::Device:Startup:1.0.0
+      Include file:  Device\Include\TM4C129\TM4C129.h
+      Source file:   Device\Source\system_TM4C129.c
+      Source file:   Device\Source\ARM\startup_TM4C129.s
+Build Time Elapsed:  00:00:02
+</pre>
+</body>
+</html>

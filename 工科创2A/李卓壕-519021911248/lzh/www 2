@@ -1,0 +1,666 @@
+//*****************************************************************************
+//
+// stepper.c - Simple example to drive stepper motor.
+//
+// Copyright (c) SJTU  All rights reserved.
+// Software License Agreement
+// 
+// Board: EK-TM4C1294XL.
+//
+//*****************************************************************************
+
+#include <stdint.h>
+#include <stdbool.h>
+#include "inc/hw_types.h"
+#include "inc/hw_memmap.h"
+#include "inc/tm4c1294ncpdt.h"
+#include "driverlib/gpio.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/systick.h"
+#include "driverlib/debug.h"
+#include "driverlib/fpu.h"
+#include "driverlib/interrupt.h"
+#include "driverlib/pin_map.h"
+#include "driverlib/rom.h"
+#include "driverlib/rom_map.h"
+#include "driverlib/timer.h"
+#include "driverlib/uart.h"
+//#include "inc/hw_ints.h"
+#include "i2c.h"
+#include "hw_i2c.h"
+#include "adc.h"
+#include <cstring>
+//*****************************************************************************
+//
+//! \addtogroup example_list
+//! <h1>Blinky (blinky)</h1>
+//!
+//! A very simple example that blinks the on-board LED using direct register
+//! access.
+//
+//*****************************************************************************
+
+//*****************************************************************************
+//
+// The error routine that is called if the driver library encounters an error.
+//
+//*****************************************************************************
+#ifdef DEBUG
+void
+__error__(char *pcFilename, uint32_t ui32Line)
+{
+    while(1);
+}
+#endif
+
+//*****************************************************************************
+//
+// Control the step motor in 
+//
+//*****************************************************************************
+#define TCA6424_I2CADDR 					0x22
+#define PCA9557_I2CADDR						0x18
+
+#define PCA9557_INPUT							0x00
+#define	PCA9557_OUTPUT						0x01
+#define PCA9557_POLINVERT					0x02
+#define PCA9557_CONFIG						0x03
+
+#define TCA6424_CONFIG_PORT0			0x0c
+#define TCA6424_CONFIG_PORT1			0x0d
+#define TCA6424_CONFIG_PORT2			0x0e
+
+#define TCA6424_INPUT_PORT0				0x00
+#define TCA6424_INPUT_PORT1				0x01
+#define TCA6424_INPUT_PORT2				0x02
+
+#define TCA6424_OUTPUT_PORT0			0x04
+#define TCA6424_OUTPUT_PORT1			0x05
+#define TCA6424_OUTPUT_PORT2			0x06
+
+volatile uint8_t result;
+
+uint32_t Clock;
+uint32_t pui32ADC0Value[1];               //ADC??
+
+uint8_t i=1;               //??????
+uint8_t j=0;               //?????????
+
+int times=0;               //??????
+uint8_t DriveCodeP[8]={9,8,12,4,6,2,3,1};                //?? code
+uint8_t DriveCodeN[8]={1,3,2,6,4,12,8,9};	//?? code
+//????
+
+
+uint32_t ui32SysClock;
+uint8_t display[]={0x80,0x40,0x20,0x10,8,4,2,1};               //????????
+uint8_t seg7[] = {0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f,0x77,0x7c,0x58,0x5e,0x079,0x71,0x5c};               //????????
+
+int minute=0;               //?
+int second=55;               //?
+int repeat=0;               //????????
+int differ;               //???????
+int segment;               //?????????????
+
+uint32_t tmp;               //ADC???????????
+uint32_t tmptimer;               //Timer???????????
+uint32_t tmpstore;               //??????????
+uint32_t tmpgpio;               //GPIO???????????
+
+char clockwise[]={'C','L','O','C','K','W','I','S','E'};               //??????
+char cclockwise[]={'C','C','L','O','C','K','W','I','S','E'};               //??????
+char calibrate[]={'C','A','L','I','B','R','A','T','E'};               //????
+
+//UART Functions
+void UARTStringPut(uint8_t *cMessage);
+void UARTStringPutNonBlocking(const char *cMessage);
+void UARTStringGetNonBlocking(char *msg);
+void Delay(uint32_t time);
+
+//I2C
+uint8_t 	I2C0_WriteByte(uint8_t DevAddr, uint8_t RegAddr, uint8_t WriteData);
+uint8_t 	I2C0_ReadByte(uint8_t DevAddr, uint8_t RegAddr);
+
+
+//?????
+void S800_GPIO_Init(void);
+void S800_UART_Init(void);
+void time0_Init(void);
+void S800_I2C0_Init(void);
+void ADC_Init(void);
+void Setup(void);
+
+int main(void)
+{		
+	//??????
+  Clock=SysCtlClockFreqSet(SYSCTL_OSC_INT| SYSCTL_USE_PLL|SYSCTL_CFG_VCO_480,40000000);
+	S800_GPIO_Init();
+	S800_UART_Init();
+	S800_I2C0_Init();
+	ADC_Init();
+	time0_Init();
+	Setup();
+		
+	GPIOIntEnable(GPIO_PORTJ_BASE,GPIO_PIN_0);               //??PJ0????
+	GPIOIntEnable(GPIO_PORTJ_BASE,GPIO_PIN_1);               //??PJ1????
+	IntEnable(INT_GPIOJ);               //??PortJ???
+	
+	//setup the interrupts for the timer timeouts.
+	IntEnable(INT_TIMER0A);
+  TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+	//Enable the timers.
+	TimerEnable(TIMER0_BASE, TIMER_A);
+	
+	//??uart??
+	IntEnable(INT_UART0);
+	UARTIntEnable(UART0_BASE, UART_INT_RX | UART_INT_RT);
+	
+  //??ADC??
+	ADCIntEnable(ADC0_BASE , 3);
+	IntEnable(INT_ADC0SS3);
+
+  //???????
+	IntMasterEnable();
+	IntPriorityGroupingSet(0x07);
+	IntPrioritySet(INT_UART0,0x00);
+	IntPrioritySet(INT_GPIOJ,0x30);
+	IntPrioritySet(INT_TIMER0A,0x40);
+	IntPrioritySet(INT_ADC0SS3,0x80);
+
+  while(1)
+  {
+		// Trigger the ADC conversion.
+		ADCProcessorTrigger(ADC0_BASE, 3);
+	}
+}
+
+void Delay(uint32_t time)
+{
+	for(uint32_t i=0;i<time;i++)
+	{
+		for(uint32_t j=0;j<1000;j++)
+		{		
+		}
+	}
+}
+
+void S800_GPIO_Init(void)
+{
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF)){}
+	GPIO_PORTF_AHB_DIR_R=0xf;//Config Port F bit 0,1,2,3 as output ,here AHB means F is an AHB bus control
+		//  also can use the diriverlib function as below line
+	  //   GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);	 
+	GPIO_PORTF_AHB_DEN_R=0xf;// Enable  Port F bit 0,1,2,4 
+		
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOJ);						//Enable PortJ	
+	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOJ));			//Wait for the GPIO moduleJ ready	
+	
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPION);						//Enable PortN
+	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPION));			//Wait for the GPIO moduleN ready	
+	GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE,GPIO_PIN_0 | GPIO_PIN_1);//Set the Pn0,Pn1 as output pin
+		
+	GPIOPinTypeGPIOInput(GPIO_PORTJ_BASE,GPIO_PIN_0 | GPIO_PIN_1);//Set the PJ0,PJ1 as input pin
+	GPIOPadConfigSet(GPIO_PORTJ_BASE,GPIO_PIN_0 | GPIO_PIN_1,GPIO_STRENGTH_2MA,GPIO_PIN_TYPE_STD_WPU);
+	GPIOIntTypeSet(GPIO_PORTJ_BASE,GPIO_PIN_0|GPIO_PIN_1,GPIO_LOW_LEVEL);
+}
+//ADC???
+void ADC_Init(void)
+{
+	// The ADC0 peripheral must be enabled for use.
+    //
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);
+		while(!SysCtlPeripheralReady(SYSCTL_PERIPH_ADC0)){}
+	// For this example ADC0 is used with AIN0 on port E7.
+    // The actual port and pins used may be different on your part, consult
+    // the data sheet for more information.  GPIO port E needs to be enabled
+    // so these pins can be used.
+    // TODO: change this to whichever GPIO port you are using.
+    //
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
+		while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOE)){}
+		// Select the analog ADC function for these pins.
+    // Consult the data sheet to see which functions are allocated per pin.
+    // TODO: change this to select the port/pin you are using.
+    //
+    GPIOPinTypeADC(GPIO_PORTE_BASE, GPIO_PIN_1);		//PE1 =AIN2
+			// Enable sample sequence 3 with a processor signal trigger.  Sequence 3
+    // will do a single sample when the processor sends a signal to start the
+    // conversion.  Each ADC module has 4 programmable sequences, sequence 0
+    // to sequence 3.  This example is arbitrarily using sequence 3.
+    //
+    ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 0);
+			// Configure step 0 on sequence 3.  Sample channel 0 (ADC_CTL_CH0) in
+    // single-ended mode (default) and configure the interrupt flag
+    // (ADC_CTL_IE) to be set when the sample is done.  Tell the ADC logic
+    // that this is the last conversion on sequence 3 (ADC_CTL_END).  Sequence
+    // 3 has only one programmable step.  Sequence 1 and 2 have 4 steps, and
+    // sequence 0 has 8 programmable steps.  Since we are only doing a single
+    // conversion using sequence 3 we will only configure step 0.  For more
+    // information on the ADC sequences and steps, reference the datasheet.
+    //
+    ADCSequenceStepConfigure(ADC0_BASE, 3, 0, ADC_CTL_CH2 | ADC_CTL_IE | ADC_CTL_END);
+		// ADC Chanel is AN2
+    //
+    // Since sample sequence 3 is now configured, it must be enabled.
+    //
+    ADCSequenceEnable(ADC0_BASE, 3);
+		// Clear the interrupt status flag.  This is done to make sure the
+    // interrupt flag is cleared before we sample.
+    ADCIntClear(ADC0_BASE, 3);
+											
+}
+//I20???
+void S800_I2C0_Init(void)
+{
+	uint8_t result;
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C0);
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+	GPIOPinConfigure(GPIO_PB2_I2C0SCL);
+  GPIOPinConfigure(GPIO_PB3_I2C0SDA);
+  GPIOPinTypeI2CSCL(GPIO_PORTB_BASE, GPIO_PIN_2);
+  GPIOPinTypeI2C(GPIO_PORTB_BASE, GPIO_PIN_3);
+
+	I2CMasterInitExpClk(I2C0_BASE,Clock/2, true);										//config I2C0 400k
+	I2CMasterEnable(I2C0_BASE);	
+
+	result = I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_CONFIG_PORT0,0x0ff);		//config port 0 as input
+	result = I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_CONFIG_PORT1,0x0);			//config port 1 as output
+	result = I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_CONFIG_PORT2,0x0);			//config port 2 as output 
+
+}
+
+uint8_t I2C0_WriteByte(uint8_t DevAddr, uint8_t RegAddr, uint8_t WriteData)
+{
+	uint8_t rop;
+	while(I2CMasterBusy(I2C0_BASE)){};
+	I2CMasterSlaveAddrSet(I2C0_BASE, DevAddr, false);
+	I2CMasterDataPut(I2C0_BASE, RegAddr);
+	I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_BURST_SEND_START);
+	while(I2CMasterBusy(I2C0_BASE)){};
+	rop = (uint8_t)I2CMasterErr(I2C0_BASE);
+
+	I2CMasterDataPut(I2C0_BASE, WriteData);
+	I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_BURST_SEND_FINISH);
+	while(I2CMasterBusy(I2C0_BASE)){};
+
+	rop = (uint8_t)I2CMasterErr(I2C0_BASE);
+	return rop;
+}
+
+uint8_t I2C0_ReadByte(uint8_t DevAddr, uint8_t RegAddr)
+{
+	uint8_t value,rop;
+	while(I2CMasterBusy(I2C0_BASE)){};	
+	I2CMasterSlaveAddrSet(I2C0_BASE, DevAddr, false);
+	I2CMasterDataPut(I2C0_BASE, RegAddr);
+//	I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_BURST_SEND_START);		
+	I2CMasterControl(I2C0_BASE,I2C_MASTER_CMD_SINGLE_SEND);
+	while(I2CMasterBusBusy(I2C0_BASE));
+	rop = (uint8_t)I2CMasterErr(I2C0_BASE);
+	Delay(1);
+	//receive data
+	I2CMasterSlaveAddrSet(I2C0_BASE, DevAddr, true);
+	I2CMasterControl(I2C0_BASE,I2C_MASTER_CMD_SINGLE_RECEIVE);
+	while(I2CMasterBusBusy(I2C0_BASE));
+	value=I2CMasterDataGet(I2C0_BASE);
+		Delay(1);
+	return value;
+}
+
+//UART???
+void S800_UART_Init(void)
+{
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);						//Enable PortA
+	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOA));			//Wait for the GPIO moduleA ready
+
+	GPIOPinConfigure(GPIO_PA0_U0RX);												// Set GPIO A0 and A1 as UART pins.
+  GPIOPinConfigure(GPIO_PA1_U0TX);    			
+
+  GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+
+// Configure the UART character format: 115,200, 8-N-1. FIFO????
+  UARTConfigSetExpClk(UART0_BASE, Clock,115200,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |UART_CONFIG_PAR_NONE));
+	
+	UARTFIFOLevelSet(UART0_BASE,UART_FIFO_TX7_8,UART_FIFO_RX7_8);	//???????14??
+
+  UARTStringPut((uint8_t *)"\r\nHello, world!\r\n");
+}
+
+//UART??????
+void UARTStringPut(uint8_t *cMessage)
+{
+	while(*cMessage!='\0')
+		UARTCharPut(UART0_BASE,*(cMessage++));
+}
+
+void UARTStringPutNonBlocking(const char *cMessage)
+{
+	while(*cMessage!='\0')// ??'\0'?C???i????????????,ASCII??00H?
+		UARTCharPutNonBlocking(UART0_BASE,*(cMessage++));
+}
+
+void UARTStringGetNonBlocking(char *msg)
+{
+	while(UARTCharsAvail(UART0_BASE))
+	{
+		*msg++ = UARTCharGetNonBlocking(UART0_BASE);
+	}
+	*msg = '\0';		//???????
+}
+
+//Timer0 ???
+void time0_Init(void)	
+{
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);	//Enable the timer0 peripheral
+	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER0)){}	//Wait for the timer0 module to be ready.
+	TimerConfigure(TIMER0_BASE,TIMER_CFG_PERIODIC);
+	TimerLoadSet(TIMER0_BASE, TIMER_A, Clock/450);
+}
+
+int segment2=7;               //?????????????
+void GPIOJ_Handler(void)               //PortJ???????
+{
+int push_once_0=0,push_once_1=0;               //??????????????
+
+	GPIOIntClear(GPIO_PORTJ_BASE,GPIO_PIN_0);	
+	GPIOIntClear(GPIO_PORTJ_BASE,GPIO_PIN_1);	
+	
+	result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,0);               //?????
+
+	while(!GPIOPinRead(GPIO_PORTJ_BASE,GPIO_PIN_0))
+	{
+		if(push_once_0==0)	
+		{
+			for(times=0;times<68;times++)
+		  {
+				GPIO_PORTF_AHB_DATA_R=DriveCodeP[j]; // Output a drive code of 4 to stepper
+			  Delay(25);
+		    j++;
+		    j%=8;
+		  }
+		  GPIO_PORTF_AHB_DATA_R=0;
+		  if(times==68)               //6°??68?
+		  {
+			  ++second;
+		    minute+=second/60;
+	      second%=60;
+        minute%=60;
+        tmpstore=minute*10000+second*100+tmpstore%100;               //????????
+		  }
+		}
+		
+		result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT1,seg7[tmpgpio%10]);
+		segment2++;
+	  segment2=(segment2-2)%6+2;
+		result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,display[segment2]);
+		Delay(5);
+	  tmpgpio/=10;
+	  result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,0);               //????
+		Delay(2);
+		
+		if(segment2==7)
+	  tmpgpio=tmpstore;               //????
+		push_once_0=1;
+	}
+	
+	while(!GPIOPinRead(GPIO_PORTJ_BASE,GPIO_PIN_1))
+	{
+		if(push_once_1==0)	
+		{
+			for(times=0;times<68;times++)
+		  {
+			  GPIO_PORTF_AHB_DATA_R=DriveCodeN[j]; // Output a drive code of 4 to stepper
+			  Delay(10);
+		    j++;
+		    j%=8;
+		  }
+			GPIO_PORTF_AHB_DATA_R=0;
+			if(times==68)               //6°??68?
+			{
+			  second=(second+59)%60;
+		    minute=minute-second/59+60;
+	      second%=60;
+        minute%=60;
+        tmpstore=minute*10000+second*100+tmpstore%100;               //????????
+			}
+		}
+		
+		result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT1,seg7[tmpgpio%10]);
+	  segment2++;
+	  segment2=(segment2-2)%6+2;
+		result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,display[segment2]);
+		Delay(5);
+	  tmpgpio/=10;
+	  result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,0);               //????
+		Delay(2);
+		
+		if(segment2==7)
+	  tmpgpio=tmpstore;               //????
+		push_once_1=1;
+	}
+}
+
+//Time0A??????
+void TIMER0A_Handler(void)
+{
+
+	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+	GPIO_PORTF_AHB_DATA_R=DriveCodeP[j]; // Output a drive code of 4 to stepper
+	j++;
+	j%=8;
+	repeat++;
+	
+	if(repeat==68)               //6°??68?
+	{
+	  repeat=0;
+		GPIO_PORTF_AHB_DATA_R=0;
+		for(uint8_t cnt=0;cnt<135;++cnt)
+		{
+		  for(uint8_t i=2;i<8;++i)
+   	  {
+				result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT1,seg7[tmptimer%10]);
+		    result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,display[i]);
+	      tmptimer/=10;
+			  Delay(5);
+	      result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,0);
+			  Delay(2);               //????????????
+	      if(I2C0_ReadByte(TCA6424_I2CADDR,TCA6424_INPUT_PORT0)==254)               //??SW1??
+	      {
+		      differ=tmpstore%100-second;
+		      second=tmpstore%100;
+		      minute+=second/60;
+	        second%=60;
+          minute%=60;
+          tmpstore=minute*10000+second*100+tmpstore%100;               //????????
+					
+		      if(differ>0)               //???
+		      {
+						differ*=68;
+            for(times=0;times<differ;times++)
+		        {
+							GPIO_PORTF_AHB_DATA_R=DriveCodeP[j]; // Output a drive code of 4 to stepper
+			        Delay(10);
+		          j++;
+		          j%=8;
+		        }
+					}
+					
+		      if(differ<0)               //???
+		      {
+						differ=0-differ;
+			      differ*=68;
+            for(times=0;times<differ;times++)
+		        {
+							GPIO_PORTF_AHB_DATA_R=DriveCodeN[j]; // Output a drive code of 4 to stepper
+			        Delay(10);
+		          j++;
+		          j%=8;
+		        }
+					}
+				}
+	    }
+		  tmptimer=tmpstore;               //????
+		}
+		++second;
+	}	
+}
+/*
+	Corresponding to the startup_TM4C129.s vector table UART0_Handler interrupt program name
+*/
+void UART0_Handler(void)
+{   
+	char receive[20];               //?????
+	int ordinal=0;               //???????
+	int32_t uart0_int_status;
+	uart0_int_status 	= UARTIntStatus(UART0_BASE, true);	
+	UARTIntClear(UART0_BASE, uart0_int_status);				//Clear the asserted interrupts
+	result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,0);               //?????
+	while(UARTCharsAvail(UART0_BASE))    		// Loop while there are characters in the receive FIFO.
+	{
+		///Read the next character from the UART and write it back to the UART.
+		receive[ordinal] = UARTCharGetNonBlocking(UART0_BASE);
+    if(receive[ordinal]>96&&receive[ordinal]<123)
+			receive[ordinal]-=32;
+		++ordinal;
+
+		Delay(100);               //????
+	}
+	if((strncmp(receive,clockwise,9)==0)&&(receive[9]>'0')&&(receive[9]<'6')&&(receive[10]==0))               
+	//?????????
+	{
+		differ=receive[9]-'0';
+		second+=differ;
+		minute+=second/60;
+	  second%=60;
+    minute%=60;
+		differ*=68;               //??????
+    for(times=0;times<differ;times++)
+		{
+			GPIO_PORTF_AHB_DATA_R=DriveCodeP[j]; // Output a drive code of 4 to stepper
+			Delay(10);
+		  j++;
+		  j%=8;
+		}
+    tmpstore=minute*10000+second*100+tmpstore%100;               //????????
+	}
+				
+	if((strncmp(receive,cclockwise,10)==0)&&(receive[10]>'0')&&(receive[10]<'6')&&(receive[11]==0))               
+	//?????????
+	{
+		differ=receive[10]-'0';
+		second=second-differ+60;
+		minute=minute-59/second+60;
+	  second%=60;
+    minute%=60;
+    differ*=68;		//??????
+    for(times=0;times<differ;times++)
+		{
+			GPIO_PORTF_AHB_DATA_R=DriveCodeN[j]; // Output a drive code of 4 to stepper
+			Delay(10);
+		  j++;
+		  j%=8;
+		}
+    tmpstore=minute*10000+second*100+tmpstore%100;              //????????
+				}
+	if((strncmp(receive,calibrate,9)==0)&&(receive[9]==0))               //?????????
+	{
+		differ=tmpstore%100-second;
+		second=tmpstore%100;
+		if(differ>0)               //???
+		{
+			differ*=68;               //??????
+      for(times=0;times<differ;times++)
+		  {
+			  GPIO_PORTF_AHB_DATA_R=DriveCodeP[j]; // Output a drive code of 4 to stepper
+			  Delay(10);
+		    j++;
+		    j%=8;
+		  }
+		}
+		if(differ<0)               //???
+		{ 
+			differ=0-differ;
+			differ*=68;               //??????
+      for(times=0;times<differ;times++)
+		  {
+				GPIO_PORTF_AHB_DATA_R=DriveCodeN[j]; // Output a drive code of 4 to stepper
+			  Delay(10);
+		    j++;
+		    j%=8;
+		  }
+		}
+		//minute+=second/60;
+	  //second%=60;
+    //minute%=60;
+    tmpstore=minute*10000+second*100+tmpstore%100;              //????????
+	}
+	
+	result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT1,seg7[tmpgpio%10]);
+	segment++;
+	segment=(segment-2)%6+2;	
+	result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,display[segment]);
+	tmpgpio/=10;
+	result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,0);               //????
+	
+	if(segment==7)
+	  tmpgpio=tmpstore;               //????
+	
+	for(ordinal=0;ordinal<20;++ordinal)
+	  receive[ordinal]=0;               //???????
+}
+
+//ADC Sequence 3
+void ADC0SS3_Handler(void)
+{
+     // Wait for conversion to be completed.
+  while(!ADCIntStatus(ADC0_BASE, 3, false)){}
+			
+     // Clear the ADC interrupt flag.
+  ADCIntClear(ADC0_BASE, 3);
+    // Read ADC result and store it in pui32ADC0Value.
+  ADCSequenceDataGet(ADC0_BASE, 3, pui32ADC0Value);
+		
+  tmp=pui32ADC0Value[0]%60;
+  minute+=second/60;
+	second%=60;
+  minute%=60;
+	tmp+=minute*10000+second*100;               //????????
+		
+  tmptimer=tmp;
+	tmpstore=tmp;
+	tmpgpio=tmp;               //????????????
+		
+	for(uint8_t i=2;i<8;++i)
+  {
+		result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT1,seg7[tmp%10]);
+		result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,display[i]);
+		for(uint32_t j=0;j<500;j++)
+		{		
+		}
+	  tmp/=10;
+	  result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,0);               //????
+	}	
+}
+
+void Setup(void)
+{
+	//?????,???????005500		
+	tmp+=minute*10000+second*100;               //????????
+	tmpstore=tmp;
+	for(uint8_t cnt=0;cnt<50;++cnt)
+	{
+	  for(uint8_t i=2;i<8;++i)
+    {
+	    result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT1,seg7[tmp%10]);
+		  result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,display[i]);
+		  Delay(5);
+	    tmp/=10;
+	    result=I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,0);               //????
+			Delay(2);
+	  }	
+		tmp=tmpstore;               //????
+	}
+	++second;
+}
